@@ -4,10 +4,6 @@ import time
 from subprocess import call
 import numpy as np
 import pyautogui
-
-
-
-
 WRIST_IDX = 0
 THUMB_CNC_IDX=1
 THUMB_MCP_IDX=2
@@ -33,7 +29,6 @@ PINKY_TIP_IDX=20
 
 
 
-
 Smoothen=7
 
 videoCap=cv2.VideoCapture(0)
@@ -43,10 +38,6 @@ max_diff=0
 min_diff = 100000
 handSolution = mp.solutions.hands
 hands = handSolution.Hands()
-screen_width,screen_height=pyautogui.size()
-prevx = 0
-prevy = 0
-
 
 while True:
     frame +=1
@@ -72,33 +63,10 @@ while True:
                     h,w,c = img.shape
                     x,y = int(point.x * w),int(point.y * h)
                     cv2.circle(img,(x,y),
-                               10,(255,0,255)
+                               10,(255,255,255)
                                ,cv2.FILLED)
-                    thumb_tip = hand.landmark[THUMB_TIP_IDX]
-                    index_dip = hand.landmark[INDEX_FINGER_DIP_IDX]
+    cv2.imshow("CamOutput",img)
+    cv2.waitKey(1)
 
-                    midpoint_x = (thumb_tip.x + index_dip.x)/2
-                    midpoint_y = (thumb_tip.y + index_dip.y)/2
-                    #screen size
-                    screen_x = np.interp(midpoint_x,[0,1],[0,screen_width])
-                    screen_y = np.interp(midpoint_y,[0,1],[0,screen_height])
-                    currentx = prevx +(screen_x - prevx) / Smoothen
-                    currenty = prevy + (screen_y - prevy)/Smoothen
-
-                    pyautogui.moveTo(screen_width - currentx, currenty)
-                    prevx,prevy = currentx,currenty
-
-
-
-                fingers=[hand.landmark[INDEX_FINGER_TIP_IDX], hand.landmark[MIDDLE_FINGER_TIP_IDX], hand.landmark[RING_FINGER_TIP_IDX], hand.landmark[PINKY_TIP_IDX]]
-                fingersup=[finger.y < hand.landmark[INDEX_FINGER_MCP_IDX].y for finger in fingers]
-
-                if all (fingersup):
-                    pyautogui.rightClick()
-
-
-                
-        cv2.imshow("CamOutput",img)
-        cv2.waitKey(1)
 
 
